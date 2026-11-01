@@ -1,0 +1,14 @@
+namespace DalilAcademy.Core.Entities;
+
+public class Student
+{
+    public int Id { get; set; }
+    public string FullName { get; set; }=String.Empty;
+    public string Email { get; set; }=String.Empty;
+    
+    public string? Phone { get; set; }
+    public List<Enrollment> Enrollments { get; set; } = [];
+
+
+
+}
