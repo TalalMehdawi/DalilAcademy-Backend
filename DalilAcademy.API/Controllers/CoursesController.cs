@@ -11,9 +11,12 @@ namespace DalilAcademy.API.Controllers
     {
        
         [HttpGet]
-        public async Task<ActionResult <List<ResponseCourseDto>>> GetAll()
+    
+        public async Task<ActionResult<PageResulte<ResponseCourseDto>>> GetAll([FromQuery] int page,int pageSize)
         {
-            var courses = await courseService.GetAll();
+            page=Math.Max(page,1);
+            pageSize=Math.Clamp(pageSize,1,50);
+            var courses = await courseService.GetAll(page,pageSize);
             return Ok(courses);
         }
 

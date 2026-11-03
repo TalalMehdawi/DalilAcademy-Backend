@@ -4,16 +4,23 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using DalilAcademy.Core.Repository;
 using DalilAcademy.Core.Entities;
+using DalilAcademy.Core.DTOs;
 
 namespace DalilAcademy.Infra.Repository;
 public class CourseRepository(AppDbContext db) : ICourseRepository
 {
    //static readonly List <Course> courses=new List<Course> ();
 
-   public async Task<List<Course>> GetAll()
+   public async Task<PageResulte<ResponseCourseDto>> GetAll(int page,int pageSize)
    {
-      var listOfCourses=await db.Courses.Include(c=>c.Instructor).ToListAsync();
-      return listOfCourses;
+
+      int totalCountOfCourses=await db.Courses.CountAsync();
+      var listOfCourses=await db.Courses.OrderBy(c=>c.Id)
+      .Skip((page-1)*pageSize)
+      .Take(pageSize)
+      .Select(c=>new ResponseCourseDto(c.Id,c.Title,c.Price,c.Instructor!.FullName) )
+      .ToListAsync();
+      return new PageResulte<ResponseCourseDto>(listOfCourses,page,pageSize,totalCountOfCourses);
    }
 
    public async Task<Course?> GetById(int id)

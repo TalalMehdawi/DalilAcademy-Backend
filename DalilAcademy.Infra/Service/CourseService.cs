@@ -11,10 +11,10 @@ namespace DalilAcademy.Infra.Service;
 public class CourseService(ICourseRepository courseRepository,IValidator<CreateCourseDto> validator) : ICourseService
 {
 
-    public async Task<List<ResponseCourseDto>> GetAll()
+    public async Task<PageResulte<ResponseCourseDto>> GetAll(int page,int pageSize)
     {
-        var courses = await courseRepository.GetAll();
-       return courses.Select(c=>c.ToDto()).ToList();
+        var courses = await courseRepository.GetAll(page,pageSize);
+       return courses;
     }
 
     public async Task<ResponseCourseDto?> GetById(int id)
