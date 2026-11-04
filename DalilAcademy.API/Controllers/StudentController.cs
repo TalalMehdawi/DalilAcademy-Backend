@@ -10,10 +10,14 @@ namespace DalilAcademy.API.Controllers;
     
     public class StudentController(IStudentService studentService): ControllerBase
     {
+
+
         [HttpGet]
-        public async Task<ActionResult<List<ResponseStudentDto>>> GettAll()
+        public async Task<ActionResult<PageResulte<ResponseStudentDto>>> GettAll([FromQuery] int page,int pageSize)
         {
-            return  Ok(await studentService.GetAll());
+            page=Math.Max(page,1);
+            pageSize=Math.Clamp(pageSize,1,50);
+            return  Ok(await studentService.GetAll(page,pageSize));
         }
         
         [HttpGet("{id:int}")]
@@ -22,6 +26,12 @@ namespace DalilAcademy.API.Controllers;
             return  Ok(await studentService.GetById(id));
         }
         
+        [HttpGet("{id:int}/courses")]
+        public async Task<ActionResult<ResponseStudentDtoWithCourses>> GetByIdWithCourses(int id)
+        {
+            return  Ok(await studentService.GetByIdWithCourses(id));
+        }
+
         [HttpPost]
         public async Task<ActionResult<ResponseStudentDto>> Create(CreateStudentDto dto)
         {

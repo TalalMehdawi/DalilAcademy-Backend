@@ -3,7 +3,10 @@ using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.DTOs;
 public interface ICourseRepository
 {
-    Task<PageResulte<ResponseCourseDto>> GetAll(int page,int pageSize);
+   public  Task<PageResulte<ResponseCourseDto>>
+    GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize);
+    Task<int>Count();
+
     Task<Course?> GetById(int id);
 
     Task<Course> Create(Course course);

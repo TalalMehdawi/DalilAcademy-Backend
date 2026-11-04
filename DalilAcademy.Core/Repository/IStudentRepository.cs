@@ -7,7 +7,9 @@ public interface IStudentRepository
 {
     public Task<Student> GetById(int id);
 
-    public Task<List<Student>> GetAll();
+    public Task<ResponseStudentDtoWithCourses?> GetByIdWithCourses(int id);
+
+    Task<PageResulte<ResponseStudentDto>> GetAll(int page,int pageSize);
 
     public Task<Student> Create(Student student);
     

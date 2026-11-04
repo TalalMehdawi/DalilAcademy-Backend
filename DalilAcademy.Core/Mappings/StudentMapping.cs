@@ -8,7 +8,8 @@ public static class StudentMapping
     public static ResponseStudentDto ToDto(this Student student)
     {
         return new ResponseStudentDto
-            ( student.Id,  student.FullName, student.Email,  student.Phone??"");
+            ( student.Id,  student.FullName, student.Email,  student.Phone??"")
+               ;
     }
 
     public static Student ToEntity(this CreateStudentDto dto)

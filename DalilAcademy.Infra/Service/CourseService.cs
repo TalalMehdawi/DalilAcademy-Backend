@@ -10,11 +10,16 @@ namespace DalilAcademy.Infra.Service;
 
 public class CourseService(ICourseRepository courseRepository,IValidator<CreateCourseDto> validator) : ICourseService
 {
-
-    public async Task<PageResulte<ResponseCourseDto>> GetAll(int page,int pageSize)
+ 
+   public async Task<PageResulte<ResponseCourseDto>> GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize)
+{
+    return await courseRepository.GetAll(minPrice, maxPrice, page, pageSize);
+}
+    public async Task<string> Count()
     {
-        var courses = await courseRepository.GetAll(page,pageSize);
-       return courses;
+        var resulte= await courseRepository.Count();
+
+        return $"the Number of Courses is {resulte}";
     }
 
     public async Task<ResponseCourseDto?> GetById(int id)

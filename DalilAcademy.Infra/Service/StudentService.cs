@@ -2,6 +2,7 @@ using DalilAcademy.Core.DTOs;
 using DalilAcademy.Core.Mappings;
 using DalilAcademy.Core.Repository;
 using FluentValidation;
+using DalilAcademy.Core.Exceptions;
 namespace DalilAcademy.Infra.Service;
 using DalilAcademy.Core.Service;
 
@@ -10,6 +11,14 @@ public class StudentService(IStudentRepository studentRepository,
     IValidator<UpdateStudentDto> updateValidator) : IStudentService
 {
 
+    public async Task<ResponseStudentDtoWithCourses> GetByIdWithCourses(int id)
+    {
+        var student= await studentRepository.GetByIdWithCourses(id);
+        if(student is null) throw new NotFoundException($"student with this id {id} is not found");
+        return student;
+
+    }
+
     public async Task<ResponseStudentDto> GetById(int id)
     {
         var student = await studentRepository.GetById(id);
@@ -17,10 +26,9 @@ public class StudentService(IStudentRepository studentRepository,
 
     }
 
-    public async Task<List<ResponseStudentDto>> GetAll()
+    public async Task<PageResulte<ResponseStudentDto>> GetAll(int page,int pageSize)
     {
-        var students = await studentRepository.GetAll();
-        return students.Select(s => s.ToDto()).ToList();
+        return await studentRepository.GetAll(page, pageSize);
     }
 
     public async Task<ResponseStudentDto> Create(CreateStudentDto student)

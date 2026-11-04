@@ -5,8 +5,11 @@ using DalilAcademy.Core.Entities;
 public interface ICourseService
 {
 
-    Task<PageResulte<ResponseCourseDto>> GetAll(int page,int pageSize);
+   public  Task<PageResulte<ResponseCourseDto>>
+    GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize);
     
+    Task<string>Count();
+
     Task<ResponseCourseDto?> GetById(int id);
 
     Task<ResponseCourseDto?> Create(CreateCourseDto course);

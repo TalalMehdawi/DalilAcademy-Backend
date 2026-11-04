@@ -1,3 +1,4 @@
+using DalilAcademy.Core.DTOs;
 using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.Exceptions;
 using DalilAcademy.Core.Repository;
@@ -16,9 +17,33 @@ public class StudentRepository(AppDbContext db): IStudentRepository
         return student;
     }
 
-    public async Task<List<Student>> GetAll()
+    public async Task<PageResulte<ResponseStudentDto>> GetAll(int page,int pageSize)
     {
-        return await db.Students.Include(s => s.Enrollments).ToListAsync();
+
+        int totalCountOfCourses=await db.Students.CountAsync();
+        var listOfStudent=await db.Students.OrderBy(c=>c.Id)
+            .Skip((page-1)*pageSize)
+            .Take(pageSize)
+            .Select(s => new ResponseStudentDto(
+                s.Id,
+                s.FullName,
+                s.Email,
+                s.Phone
+               ))
+            .ToListAsync();
+        return new PageResulte<ResponseStudentDto>(listOfStudent,page,pageSize,totalCountOfCourses);
+    }
+
+    public async Task<ResponseStudentDtoWithCourses?> GetByIdWithCourses(int id)
+    {
+        var student= await db.Students.AsNoTracking().Where(s=> s.Id==id).Select(s=>new ResponseStudentDtoWithCourses(s.Id,s.FullName,s.Email,s.Phone,
+        s.Enrollments.Select(e => new ResponseCourseDto(
+    e.Course!.Id,
+    e.Course.Title,
+    e.Course.Price,
+    e.Course.Instructor!.FullName)).ToList())).FirstOrDefaultAsync();    
+    return student;
+
     }
 
     public async Task<Student> Create(Student student)

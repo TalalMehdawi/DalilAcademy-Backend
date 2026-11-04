@@ -12,12 +12,26 @@ namespace DalilAcademy.API.Controllers
        
         [HttpGet]
     
-        public async Task<ActionResult<PageResulte<ResponseCourseDto>>> GetAll([FromQuery] int page,int pageSize)
+        public async Task<ActionResult<PageResulte<ResponseCourseDto>>> GetAll(
+    [FromQuery] decimal? minPrice,
+    [FromQuery] decimal? maxPrice,
+    [FromQuery] int page = 1,
+    [FromQuery] int pageSize = 10)
+    {
+    if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice)
+        return BadRequest("Invalid price range");
+
+    page = Math.Max(page, 1);
+    pageSize = Math.Clamp(pageSize, 1, 50);
+    var courses = await courseService.GetAll(minPrice, maxPrice, page, pageSize);
+    return Ok(courses);
+    }
+
+        [HttpGet("/api/courses/count")]
+
+        public async Task<ActionResult<string>> Count()
         {
-            page=Math.Max(page,1);
-            pageSize=Math.Clamp(pageSize,1,50);
-            var courses = await courseService.GetAll(page,pageSize);
-            return Ok(courses);
+            return Ok(await courseService.Count());
         }
 
         [HttpGet("{id:int}")]
