@@ -2,6 +2,7 @@
 using System.Text;
 using DalilAcademy.API.Middleware;
 using DalilAcademy.Core.Repository;
+using DalilAcademy.Core.Security;
 using DalilAcademy.Core.Service;
 using DalilAcademy.Core.Validators;
 using DalilAcademy.Infra;
@@ -20,7 +21,11 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
+builder.Services.AddSingleton<ITokenService,TokenService>();
+builder.Services.AddScoped<IAuthService,AuthService>();
 builder.Services.AddScoped<IUserRepository,UserRepository>();
+
 builder.Services.AddScoped<ICourseService,CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();

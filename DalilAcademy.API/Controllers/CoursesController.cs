@@ -1,17 +1,19 @@
 using DalilAcademy.Core.DTOs;
 using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DalilAcademy.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class  CoursesController(ICourseService courseService) : ControllerBase
     {
        
         [HttpGet]
-    
+        [AllowAnonymous]
         public async Task<ActionResult<PageResulte<ResponseCourseDto>>> GetAll(
     [FromQuery] decimal? minPrice,
     [FromQuery] decimal? maxPrice,
@@ -28,7 +30,7 @@ namespace DalilAcademy.API.Controllers
     }
 
         [HttpGet("/api/courses/count")]
-
+        [AllowAnonymous]
         public async Task<ActionResult<string>> Count()
         {
             return Ok(await courseService.Count());
@@ -44,7 +46,7 @@ namespace DalilAcademy.API.Controllers
 
 
         [HttpPost]
-        
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Course>> Create(CreateCourseDto dto)
         {
            var created= await courseService.Create(dto);
@@ -58,6 +60,7 @@ namespace DalilAcademy.API.Controllers
         }
 
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             await courseService.Delete(id);
@@ -65,7 +68,7 @@ namespace DalilAcademy.API.Controllers
         }
 
         [HttpPut]
-
+        [Authorize(Roles=Roles.Admin)]
         public async Task<ActionResult<Course?>> Update(Course course)
         {
             try
