@@ -20,6 +20,7 @@ builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddScoped<IUserRepository,UserRepository>();
 builder.Services.AddScoped<ICourseService,CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();

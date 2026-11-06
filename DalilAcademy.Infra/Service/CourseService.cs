@@ -12,9 +12,9 @@ public class CourseService(ICourseRepository courseRepository,IValidator<CreateC
 {
  
    public async Task<PageResulte<ResponseCourseDto>> GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize)
-{
+    {
     return await courseRepository.GetAll(minPrice, maxPrice, page, pageSize);
-}
+    }
     public async Task<string> Count()
     {
         var resulte= await courseRepository.Count();
