@@ -16,7 +16,7 @@ public static class CourseMapping
         {
             Title = dto.Title,
             Price = dto.Price,
-            InstructorId =dto.InstructorId   
+            InstructorId = dto.InstructorId
         };
 
     }

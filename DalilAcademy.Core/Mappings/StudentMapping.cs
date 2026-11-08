@@ -8,7 +8,7 @@ public static class StudentMapping
     public static ResponseStudentDto ToDto(this Student student)
     {
         return new ResponseStudentDto
-            ( student.Id,  student.FullName, student.Email,  student.Phone??"")
+            (student.Id, student.FullName, student.Email, student.Phone ?? "")
                ;
     }
 
@@ -22,11 +22,11 @@ public static class StudentMapping
         };
     }
 
-    public static Student ToFullEntity( this UpdateStudentDto dto,int id)
+    public static Student ToFullEntity(this UpdateStudentDto dto, int id)
     {
         return new Student
         {
-            Id=id,
+            Id = id,
             FullName = dto.FullName,
             Email = dto.Email,
             Phone = dto.Phone

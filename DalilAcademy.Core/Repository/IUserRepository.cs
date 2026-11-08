@@ -5,4 +5,6 @@ namespace DalilAcademy.Core.Repository;
 public interface IUserRepository
 {
     public Task<User?> GetUserByEmail(string email);
+
+    public Task<User> Register(User user);
 }

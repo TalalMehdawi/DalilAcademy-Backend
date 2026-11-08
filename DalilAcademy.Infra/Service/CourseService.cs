@@ -1,23 +1,24 @@
 using DalilAcademy.Core.DTOs;
-using DalilAcademy.Core.Repository;
-using DalilAcademy.Core.Service;
 using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.Mappings;
+using DalilAcademy.Core.Repository;
+using DalilAcademy.Core.Service;
 using DalilAcademy.Core.Validators;
+
 using FluentValidation;
 
 namespace DalilAcademy.Infra.Service;
 
-public class CourseService(ICourseRepository courseRepository,IValidator<CreateCourseDto> validator) : ICourseService
+public class CourseService(ICourseRepository courseRepository, IValidator<CreateCourseDto> validator) : ICourseService
 {
- 
-   public async Task<PageResulte<ResponseCourseDto>> GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize)
+
+    public async Task<PageResulte<ResponseCourseDto>> GetAll(decimal? minPrice, decimal? maxPrice, int page, int pageSize)
     {
-    return await courseRepository.GetAll(minPrice, maxPrice, page, pageSize);
+        return await courseRepository.GetAll(minPrice, maxPrice, page, pageSize);
     }
     public async Task<string> Count()
     {
-        var resulte= await courseRepository.Count();
+        var resulte = await courseRepository.Count();
 
         return $"the Number of Courses is {resulte}";
     }
@@ -29,17 +30,20 @@ public class CourseService(ICourseRepository courseRepository,IValidator<CreateC
             throw new KeyNotFoundException($"Course {id} not found");
         return course.ToDto();
     }
-
+    public async Task<List<ResponseCourseDto>> GetByStudentId(int id)
+    {
+        return await courseRepository.GetByStudentId(id);
+    }
     public async Task<ResponseCourseDto?> Create(CreateCourseDto course)
     {
         await validator.ValidateAndThrowAsync(course);
         if (course.Price <= 0)
         {
             throw new ArgumentException("Price Must Be Positive");
-        } 
-        var createdCourse= await courseRepository.Create(course.ToEntity());
+        }
+        var createdCourse = await courseRepository.Create(course.ToEntity());
 
-      return createdCourse.ToDto();
+        return createdCourse.ToDto();
     }
 
 
@@ -47,9 +51,9 @@ public class CourseService(ICourseRepository courseRepository,IValidator<CreateC
     public async Task<Course?> Update(Course course)
     {
         if (course.Price <= 0) throw new ArgumentException("Price Must Be Positive");
-        
-           return await courseRepository.Update(course);
-        
+
+        return await courseRepository.Update(course);
+
     }
 
     public async Task Delete(int id)

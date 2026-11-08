@@ -1,4 +1,5 @@
 using DalilAcademy.Core.DTOs;
+
 using FluentValidation;
 
 namespace DalilAcademy.Core.Validators;
@@ -17,5 +18,5 @@ public class UpdateStudentDtoValidator : AbstractValidator<UpdateStudentDto>
             .Matches(@"^\d+$").WithMessage("Phone must contain digits only");
 
     }
-    
+
 }

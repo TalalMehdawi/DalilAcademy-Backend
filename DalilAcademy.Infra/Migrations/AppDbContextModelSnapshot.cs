@@ -120,9 +120,15 @@ namespace DalilAcademy.Infra.Migrations
                     b.Property<string>("Phone")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
                         .IsUnique();
 
                     b.ToTable("Students");
@@ -185,6 +191,15 @@ namespace DalilAcademy.Infra.Migrations
                     b.Navigation("Course");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("DalilAcademy.Core.Entities.Student", b =>
+                {
+                    b.HasOne("DalilAcademy.Core.Entities.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DalilAcademy.Core.Entities.Course", b =>

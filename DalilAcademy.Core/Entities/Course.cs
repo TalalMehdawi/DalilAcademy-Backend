@@ -5,11 +5,11 @@ namespace DalilAcademy.Core.Entities;
 public class Course
 {
 
-    public int Id {get; set;}
+    public int Id { get; set; }
 
-    public string Title {get;set;}
+    public string Title { get; set; }
 
-    public decimal Price {get;set;}
+    public decimal Price { get; set; }
 
     public int InstructorId { get; set; }
 
