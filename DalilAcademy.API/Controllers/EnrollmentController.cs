@@ -11,7 +11,7 @@ namespace DalilAcademy.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class EnrollmentsController(IEnrollmentService enrollmentService) : ControllerBase
+    public class EnrollmentsController(IEnrollmentService enrollmentService,ICourseService courseService) : ControllerBase
     {
         [HttpGet("me")]
         [Authorize(Roles = Roles.Student)]
@@ -20,7 +20,7 @@ namespace DalilAcademy.API.Controllers
             var value = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(value, out var userId))
                 throw new UnauthorizedAccessException("Id must be number");
-            return Ok(await enrollmentService.GetByStudentId(userId));
+            return Ok(await courseService.GetByStudentId(userId));
         }
 
         [HttpPost]

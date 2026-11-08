@@ -33,7 +33,8 @@ public class AuthService(
                 Email = dto.Email,
                 PasswordHash = passwordHasher.Hash(dto.Password),
                 Role = "Student"
-            }
+
+            }   
         };
         var registeredStudent = await studentRepository.Create(student);
         var token = tokenService.CreateToken(registeredStudent.User);
