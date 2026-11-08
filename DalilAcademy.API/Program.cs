@@ -1,18 +1,21 @@
 
 using System.Text;
+
 using DalilAcademy.API.Middleware;
 using DalilAcademy.Core.Repository;
 using DalilAcademy.Core.Security;
 using DalilAcademy.Core.Service;
 using DalilAcademy.Core.Validators;
 using DalilAcademy.Infra;
+using DalilAcademy.Infra.Data;
 using DalilAcademy.Infra.Repository;
 using DalilAcademy.Infra.Service;
-using Microsoft.EntityFrameworkCore;
-using DalilAcademy.Infra.Data;
+
 using FluentValidation;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,11 +25,14 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
-builder.Services.AddSingleton<ITokenService,TokenService>();
-builder.Services.AddScoped<IAuthService,AuthService>();
-builder.Services.AddScoped<IUserRepository,UserRepository>();
+builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IEnrollmentRepository,EnrollmentRepository>();
+builder.Services.AddScoped<IEnrollmentService,EnrollmentService>();
 
-builder.Services.AddScoped<ICourseService,CourseService>();
+
+builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<IStudentService, StudentService>();
@@ -40,8 +46,8 @@ builder.Services.AddProblemDetails(options =>
         ctx.ProblemDetails.Extensions.Remove("traceId");
     };
 });
-builder.Services.AddDbContext <AppDbContext >( opt =>
-    opt .UseNpgsql( builder .Configuration. GetConnectionString ("DefaultConnection")));
+builder.Services.AddDbContext<AppDbContext>(opt =>
+    opt.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var jwt = builder.Configuration.GetSection("Jwt").Get<JwtSettings>();
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
@@ -87,4 +93,3 @@ app.MapControllers();
 
 
 app.Run();
-

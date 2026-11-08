@@ -1,6 +1,7 @@
 using DalilAcademy.Core.DTOs;
 using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.Service;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,9 +10,9 @@ namespace DalilAcademy.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class  CoursesController(ICourseService courseService) : ControllerBase
+    public class CoursesController(ICourseService courseService) : ControllerBase
     {
-       
+
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<PageResulte<ResponseCourseDto>>> GetAll(
@@ -19,15 +20,15 @@ namespace DalilAcademy.API.Controllers
     [FromQuery] decimal? maxPrice,
     [FromQuery] int page = 1,
     [FromQuery] int pageSize = 10)
-    {
-    if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice)
-        return BadRequest("Invalid price range");
+        {
+            if (minPrice < 0 || maxPrice < 0 || minPrice > maxPrice)
+                return BadRequest("Invalid price range");
 
-    page = Math.Max(page, 1);
-    pageSize = Math.Clamp(pageSize, 1, 50);
-    var courses = await courseService.GetAll(minPrice, maxPrice, page, pageSize);
-    return Ok(courses);
-    }
+            page = Math.Max(page, 1);
+            pageSize = Math.Clamp(pageSize, 1, 50);
+            var courses = await courseService.GetAll(minPrice, maxPrice, page, pageSize);
+            return Ok(courses);
+        }
 
         [HttpGet("/api/courses/count")]
         [AllowAnonymous]
@@ -49,14 +50,14 @@ namespace DalilAcademy.API.Controllers
         [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Course>> Create(CreateCourseDto dto)
         {
-           var created= await courseService.Create(dto);
-           if (created is null)
-           {
-               return BadRequest("Price must be positive");
-           }
+            var created = await courseService.Create(dto);
+            if (created is null)
+            {
+                return BadRequest("Price must be positive");
+            }
 
-           return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
-           
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
+
         }
 
         [HttpDelete("{id:int}")]
@@ -68,13 +69,13 @@ namespace DalilAcademy.API.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles=Roles.Admin)]
+        [Authorize(Roles = Roles.Admin)]
         public async Task<ActionResult<Course?>> Update(Course course)
         {
             try
             {
-             var createdCourse=  await courseService.Update(course);
-             return Ok(createdCourse);
+                var createdCourse = await courseService.Update(course);
+                return Ok(createdCourse);
             }
             catch (Exception e)
             {
