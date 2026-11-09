@@ -30,7 +30,7 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
             .OrderBy(c => c.Id)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
-            .Select(c => new ResponseCourseDto(c.Id, c.Title, c.Price, c.Instructor!.FullName))
+            .Select(c => new ResponseCourseDto(c.Id, c.Title, c.Price, c.Instructor!.FullName,c.ImageUrl))
             .ToListAsync();
 
         return new PageResulte<ResponseCourseDto>(listOfCourses, page, pageSize, totalCountOfCourses);
@@ -52,7 +52,7 @@ public class CourseRepository(AppDbContext db) : ICourseRepository
     public async Task<List<ResponseCourseDto>> GetByStudentId(int id)
     {
         return await db.Courses.Where(c => c.Enrollments.Any(e => e.Student.UserId == id))
-            .Select(c => new ResponseCourseDto(c.Id, c.Title, c.Price, c.Instructor.FullName)).ToListAsync();
+            .Select(c => new ResponseCourseDto(c.Id, c.Title, c.Price, c.Instructor.FullName,c.ImageUrl)).ToListAsync();
     }
 
     public async Task<Course> Create(Course course)

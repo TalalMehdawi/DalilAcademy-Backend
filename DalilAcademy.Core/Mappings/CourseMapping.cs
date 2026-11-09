@@ -7,7 +7,7 @@ public static class CourseMapping
 {
     public static ResponseCourseDto ToDto(this Course course)
     {
-        return new ResponseCourseDto(course.Id, course.Title, course.Price, course.Instructor?.FullName);
+        return new ResponseCourseDto(course.Id, course.Title, course.Price, course.Instructor?.FullName,course.ImageUrl);
     }
 
     public static Course ToEntity(this CreateCourseDto dto)
@@ -16,7 +16,8 @@ public static class CourseMapping
         {
             Title = dto.Title,
             Price = dto.Price,
-            InstructorId = dto.InstructorId
+            InstructorId = dto.InstructorId,
+            ImageUrl=dto.ImageUrl
         };
 
     }

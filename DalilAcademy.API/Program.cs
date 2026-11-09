@@ -5,14 +5,16 @@ using DalilAcademy.API.Middleware;
 using DalilAcademy.Core.Repository;
 using DalilAcademy.Core.Security;
 using DalilAcademy.Core.Service;
+using DalilAcademy.Core.Storage;
 using DalilAcademy.Core.Validators;
 using DalilAcademy.Infra;
 using DalilAcademy.Infra.Data;
 using DalilAcademy.Infra.Repository;
 using DalilAcademy.Infra.Service;
-
+using DalilAcademy.Infra.Storage;
+using Microsoft.AspNetCore.OpenApi;
+using Microsoft.OpenApi;
 using FluentValidation;
-
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +25,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddOpenApi();
-
+builder.Services.Configure<OpenApiOptions>("v1", options =>
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
+builder.Services.AddSingleton<IImageService,ImageService>();
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -83,7 +87,7 @@ app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 
-
+app.UseStaticFiles();
 app.UseAuthentication();
 
 app.UseAuthorization();
@@ -93,3 +97,27 @@ app.MapControllers();
 
 
 app.Run();
+
+internal sealed class BearerSecuritySchemeTransformer : IOpenApiDocumentTransformer
+{
+    public Task TransformAsync(OpenApiDocument document,
+        OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
+    {
+        document.Components ??= new OpenApiComponents();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT"
+        };
+
+        document.Security ??= new List<OpenApiSecurityRequirement>();
+        document.Security.Add(new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+        });
+
+        return Task.CompletedTask;
+    }
+}

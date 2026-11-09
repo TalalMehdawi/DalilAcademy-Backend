@@ -43,7 +43,8 @@ public class StudentRepository(AppDbContext db) : IStudentRepository
     e.Course!.Id,
     e.Course.Title,
     e.Course.Price,
-    e.Course.Instructor!.FullName)).ToList())).FirstOrDefaultAsync();
+    e.Course.Instructor!.FullName
+    ,e.Course.ImageUrl)).ToList())).FirstOrDefaultAsync();
         return student;
 
     }

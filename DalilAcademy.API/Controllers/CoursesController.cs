@@ -1,6 +1,7 @@
 using DalilAcademy.Core.DTOs;
 using DalilAcademy.Core.Entities;
 using DalilAcademy.Core.Service;
+using DalilAcademy.Core.Storage;
 
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +11,7 @@ namespace DalilAcademy.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-    public class CoursesController(ICourseService courseService) : ControllerBase
+    public class CoursesController(ICourseService courseService,IImageService imageService) : ControllerBase
     {
 
         [HttpGet]
@@ -81,6 +82,15 @@ namespace DalilAcademy.API.Controllers
             {
                 return BadRequest(e.Message);
             }
+        }
+
+        [HttpPost("images")]
+        [Authorize(Roles=Roles.Admin)]
+        public async Task<ActionResult> UploadImage(IFormFile file)
+        {
+            await using var stream = file.OpenReadStream();
+            var url = await imageService.SaveCourseImageAsync(stream , file.FileName,file.Length);
+            return Ok(new { imageUrl = url });
         }
 
 
