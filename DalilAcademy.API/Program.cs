@@ -12,11 +12,9 @@ using DalilAcademy.Infra.Data;
 using DalilAcademy.Infra.Repository;
 using DalilAcademy.Infra.Service;
 using DalilAcademy.Infra.Storage;
-using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 
@@ -24,9 +22,27 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
-builder.Services.AddOpenApi();
-builder.Services.Configure<OpenApiOptions>("v1", options =>
-    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>());
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Dalil Academy LMS API",
+        Version = "v1"
+    });
+
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Paste the token from /api/Auth/login"
+    });
+
+    options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecuritySchemeReference("Bearer", document)] = []
+    });
+});
 builder.Services.AddSingleton<IImageService,ImageService>();
 builder.Services.AddSingleton<IPasswordHasher, BcryptPasswordHasher>();
 builder.Services.AddSingleton<ITokenService, TokenService>();
@@ -68,56 +84,21 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         ClockSkew = TimeSpan.FromMinutes(1)
     });
 
-builder.Services.AddAuthorization();
-
 var app = builder.Build();
-
-
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-    app.UseSwaggerUI(options =>
-    {
-        options.SwaggerEndpoint("/openapi/v1.json", "Dalil Academy API");
-    });
-}
 
 app.UseExceptionHandler();
 
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
 
-
-
 app.Run();
-
-internal sealed class BearerSecuritySchemeTransformer : IOpenApiDocumentTransformer
-{
-    public Task TransformAsync(OpenApiDocument document,
-        OpenApiDocumentTransformerContext context, CancellationToken cancellationToken)
-    {
-        document.Components ??= new OpenApiComponents();
-        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
-        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
-        {
-            Type = SecuritySchemeType.Http,
-            Scheme = "bearer",
-            BearerFormat = "JWT"
-        };
-
-        document.Security ??= new List<OpenApiSecurityRequirement>();
-        document.Security.Add(new OpenApiSecurityRequirement
-        {
-            [new OpenApiSecuritySchemeReference("Bearer", document)] = []
-        });
-
-        return Task.CompletedTask;
-    }
-}
